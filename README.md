@@ -32,6 +32,13 @@ Produtos, promoções, fotos e login ficam num projeto Supabase gratuito.
 5. Em **Authentication → URL Configuration**, coloque `https://osmario2006.github.io/casadaracao/painel.html` em **Site URL** (usado no link de "Esqueci minha senha").
 6. Copie **Project URL** e **anon public key** (Project Settings → API) para `js/config.js`.
 
+
+### Segurança
+- `supabase/seguranca.sql`: validações dos dados, limite de fotos (JPG/PNG/WebP até 2 MB), histórico de alterações, produtos ocultos fora da API e exigência do código de verificação quando a verificação em duas etapas está ativa.
+- Todas as páginas têm Content-Security-Policy; o painel carrega o supabase-js com verificação de integridade (SRI) e não abre dentro de outros sites.
+- Painel: verificação em duas etapas (app autenticador), senha forte (12+ caracteres), saída automática após 30 minutos sem uso e "sair de todos os aparelhos".
+- `politica.html`: rascunho da política de privacidade (sem link e fora do Google até preencher CNPJ e responsável).
+
 Enquanto `js/config.js` estiver vazio, o site usa o catálogo de `data/catalogo.json`.
 
 ## Como editar à mão

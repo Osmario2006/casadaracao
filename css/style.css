@@ -299,3 +299,11 @@ a.promo-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
 .promo-top .steps{margin-top:0}
 main > .section-head:first-child{margin-top:30px}
 main > .steps{margin-top:22px}
+
+/* páginas de texto (política de privacidade) */
+.legal{max-width:760px}
+.legal h2{font-size:1.3rem;margin:28px 0 8px}
+.legal p,.legal li{line-height:1.65}
+.legal ul{padding-left:20px;display:grid;gap:8px}
+.legal mark{background:var(--sun);color:var(--sun-ink);padding:0 4px;border-radius:4px}
+.legal .draft{margin-top:24px;background:var(--sun);color:var(--sun-ink);border-radius:var(--r);padding:12px 14px;font-weight:700}

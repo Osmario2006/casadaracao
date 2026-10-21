@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://unnmstazqkrjcuhvszza.supabase.co; connect-src 'self' https://unnmstazqkrjcuhvszza.supabase.co; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'; worker-src 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="no-referrer">
 <title>Painel da Loja · Casa da Ração</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0f5a2b">
@@ -22,7 +24,7 @@
     </div>
     <nav class="p-links">
       <span class="who" id="who"></span>
-      <a class="btn btn-ghost btn-sm" href="index.html" target="_blank" rel="noopener">Ver site</a>
+      <a class="btn btn-ghost btn-sm" href="index.html" target="_blank" rel="noopener noreferrer">Ver site</a>
       <button class="btn btn-ghost btn-sm" type="button" id="logout" hidden>Sair</button>
     </nav>
   </div>
@@ -35,25 +37,33 @@
     <p class="muted" id="loginLead">Área exclusiva do dono da loja para alterar preços, fotos, produtos e promoções do site.</p>
 
     <form id="loginForm" class="form" novalidate>
-      <div class="field"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" inputmode="email" placeholder="seu@email.com"></div>
-      <div class="field"><label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password"></div>
-      <p class="err" id="loginErr" hidden></p>
+      <div class="field"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" inputmode="email" maxlength="254" placeholder="seu@email.com"></div>
+      <div class="field"><label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password" maxlength="128"></div>
+      <p class="err" id="loginErr" role="alert" hidden></p>
       <button class="btn btn-green" type="submit" id="loginBtn">Entrar</button>
       <button class="linkbtn" type="button" id="forgot">Esqueci minha senha</button>
     </form>
 
+    <form id="mfaForm" class="form" novalidate hidden>
+      <p class="muted" style="margin:0">Abra o app autenticador no celular e digite o código de 6 dígitos de <b>Casa da Ração</b>.</p>
+      <div class="field"><label for="mfaCode">Código de verificação</label><input id="mfaCode" class="code-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*" placeholder="000000"></div>
+      <p class="err" id="mfaErr" role="alert" hidden></p>
+      <button class="btn btn-green" type="submit" id="mfaBtn">Confirmar código</button>
+      <button class="linkbtn" type="button" id="mfaCancel">Entrar com outra conta</button>
+    </form>
+
     <form id="resetForm" class="form" novalidate hidden>
-      <div class="field"><label for="remail">E-mail cadastrado</label><input id="remail" type="email" autocomplete="username" inputmode="email"></div>
-      <p class="err" id="resetErr" hidden></p>
+      <div class="field"><label for="remail">E-mail cadastrado</label><input id="remail" type="email" autocomplete="username" inputmode="email" maxlength="254"></div>
+      <p class="err" id="resetErr" role="alert" hidden></p>
       <p class="ok-msg" id="resetOk" hidden></p>
       <button class="btn btn-green" type="submit" id="resetBtn">Enviar link para criar nova senha</button>
       <button class="linkbtn" type="button" id="backLogin">Voltar para o login</button>
     </form>
 
     <form id="newPassForm" class="form" novalidate hidden>
-      <div class="field"><label for="npass">Nova senha</label><input id="npass" type="password" autocomplete="new-password"><p class="hint">Use pelo menos 8 caracteres.</p></div>
-      <div class="field"><label for="npass2">Repita a nova senha</label><input id="npass2" type="password" autocomplete="new-password"></div>
-      <p class="err" id="npErr" hidden></p>
+      <div class="field"><label for="npass">Nova senha</label><input id="npass" type="password" autocomplete="new-password" maxlength="128"><p class="hint">Mínimo de 12 caracteres, com letra maiúscula, minúscula, número e símbolo.</p></div>
+      <div class="field"><label for="npass2">Repita a nova senha</label><input id="npass2" type="password" autocomplete="new-password" maxlength="128"></div>
+      <p class="err" id="npErr" role="alert" hidden></p>
       <button class="btn btn-green" type="submit" id="npBtn">Salvar nova senha</button>
     </form>
 
@@ -63,14 +73,21 @@
 
 <!-- painel -->
 <main class="wrap" id="app" hidden>
+  <div class="mfa-banner" id="mfaBanner" hidden>
+    <p><b>Proteja o painel com verificação em duas etapas.</b> Mesmo que alguém descubra sua senha, não vai conseguir entrar sem o código do seu celular.</p>
+    <button class="btn btn-sun btn-sm" type="button" id="goSec">Ativar agora</button>
+  </div>
+
   <div class="tabs" role="tablist" aria-label="Seções do painel">
     <button class="tab" role="tab" id="tab-produtos" aria-selected="true" aria-controls="view-produtos">Produtos <span id="nProd"></span></button>
     <button class="tab" role="tab" id="tab-promos" aria-selected="false" aria-controls="view-promos">Promoções <span id="nPromo"></span></button>
+    <button class="tab" role="tab" id="tab-hist" aria-selected="false" aria-controls="view-hist">Histórico</button>
+    <button class="tab" role="tab" id="tab-sec" aria-selected="false" aria-controls="view-sec">Segurança</button>
   </div>
 
   <section id="view-produtos" role="tabpanel" aria-labelledby="tab-produtos">
     <div class="toolbar">
-      <div class="field grow"><label class="sr" for="fq">Buscar produto</label><input id="fq" type="search" placeholder="Buscar produto…"></div>
+      <div class="field grow"><label class="sr" for="fq">Buscar produto</label><input id="fq" type="search" maxlength="60" placeholder="Buscar produto…"></div>
       <div class="field"><label class="sr" for="fs">Setor</label><select id="fs"><option value="">Todos os setores</option></select></div>
       <button class="btn btn-green" type="button" id="newProd">+ Novo produto</button>
     </div>
@@ -84,6 +101,37 @@
       <button class="btn btn-green" type="button" id="newPromo">+ Nova promoção</button>
     </div>
     <div id="promoList" class="list"></div>
+  </section>
+
+  <section id="view-hist" role="tabpanel" aria-labelledby="tab-hist" hidden>
+    <div class="toolbar">
+      <p class="muted small grow" style="margin:0">As últimas 100 alterações feitas no site: quem fez, quando e o que mudou.</p>
+      <button class="btn btn-line btn-sm" type="button" id="histReload">Atualizar</button>
+    </div>
+    <div id="histList" class="list"></div>
+  </section>
+
+  <section id="view-sec" role="tabpanel" aria-labelledby="tab-sec" hidden>
+    <div class="sec-grid">
+      <div class="p-card">
+        <h2>Verificação em duas etapas</h2>
+        <div id="mfaBox"></div>
+      </div>
+      <div class="p-card">
+        <h2>Trocar senha</h2>
+        <form id="chgForm" class="form" novalidate>
+          <div class="field"><label for="cpass">Nova senha</label><input id="cpass" type="password" autocomplete="new-password" maxlength="128"><p class="hint">Mínimo de 12 caracteres, com letra maiúscula, minúscula, número e símbolo.</p></div>
+          <div class="field"><label for="cpass2">Repita a nova senha</label><input id="cpass2" type="password" autocomplete="new-password" maxlength="128"></div>
+          <p class="err" id="chgErr" role="alert" hidden></p>
+          <button class="btn btn-green" type="submit" id="chgBtn">Salvar nova senha</button>
+        </form>
+      </div>
+      <div class="p-card">
+        <h2>Sessões</h2>
+        <p class="muted small">O painel sai sozinho depois de 30 minutos sem uso. Se você entrou num aparelho que não é seu, encerre todas as sessões.</p>
+        <div id="allOutBox"><button class="btn btn-danger" type="button" id="allOut">Sair de todos os aparelhos</button></div>
+      </div>
+    </div>
   </section>
 </main>
 
@@ -99,7 +147,7 @@
 
 <div class="toast" id="toast" role="status"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="js/config.js"></script>
 <script src="js/painel.js"></script>
 </body>

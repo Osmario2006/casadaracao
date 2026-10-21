@@ -26,8 +26,11 @@
   }
   const WHATSAPP = CAT.WHATSAPP;
   const SETORES = CAT.SETORES;
-  const PRODUTOS = CAT.PRODUTOS.filter((p) => p.ativo !== false);
-  const PROMOCOES = (CAT.PROMOCOES || []).filter((p) => p.ativo !== false);
+  // só aceita dados no formato esperado (defesa extra caso o banco receba algo estranho)
+  const SAFE_ID = /^[a-z0-9][a-z0-9-]{0,59}$/;
+  const setoresOk = new Set(CAT.SETORES.map((s) => s.id));
+  const PRODUTOS = (CAT.PRODUTOS || []).filter((p) => p && p.ativo !== false && SAFE_ID.test(p.id) && setoresOk.has(p.setor) && typeof p.nome === "string");
+  const PROMOCOES = (CAT.PROMOCOES || []).filter((b) => b && b.ativo !== false && SAFE_ID.test(b.id) && typeof b.titulo === "string");
   const PAGE = document.body.dataset.page; // "inicio" ou id do setor
   const $ = (s) => document.querySelector(s);
   const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -37,13 +40,18 @@
   const ico = (id, s = 18) => `<svg width="${s}" height="${s}" aria-hidden="true"><use href="#${id}"/></svg>`;
   const byId = Object.fromEntries(PRODUTOS.map((p) => [p.id, p]));
   const setorById = Object.fromEntries(SETORES.map((s) => [s.id, s]));
-  const img = (p) => (/^https?:\/\//.test(p.imagem) ? p.imagem : "img/" + p.imagem);
-  const linkProduto = (p) => setorById[p.setor].pagina + "#p-" + p.id;
+  const STORAGE_IMG = /^https:\/\/unnmstazqkrjcuhvszza\.supabase\.co\/storage\/v1\/object\/public\/produtos\/[A-Za-z0-9._-]+$/;
+  const img = (p) => esc(STORAGE_IMG.test(p.imagem || "") ? p.imagem : /^[A-Za-z0-9._-]+$/.test(p.imagem || "") ? "img/" + p.imagem : "");
+  const linkProduto = (p) => esc(setorById[p.setor].pagina + "#p-" + p.id);
   const sel = {};
 
   /* ---------- pedido salvo no navegador (vale para todas as páginas) ---------- */
   let cart = [];
-  try { cart = JSON.parse(localStorage.getItem("cdr-cart") || "[]").filter((i) => byId[i.id]); } catch (e) { cart = []; }
+  try {
+    cart = JSON.parse(localStorage.getItem("cdr-cart") || "[]")
+      .filter((i) => i && byId[i.id] && (i.o == null || (byId[i.id].opcoes || []).includes(i.o)))
+      .map((i) => ({ id: i.id, o: i.o ?? null, q: Math.min(99, Math.max(1, parseInt(i.q, 10) || 1)) }));
+  } catch (e) { cart = []; }
   const save = () => { try { localStorage.setItem("cdr-cart", JSON.stringify(cart)); } catch (e) {} };
   const optOf = (id) => (byId[id].opcoes ? sel[id] || byId[id].opcoes[0] : null);
 
@@ -70,15 +78,15 @@
       ? `<div class="price">${p.de ? `<s>${brl(p.de)}</s>` : ""}${brl(p.preco)}</div>`
       : `<div class="price ask">Valor no<br>WhatsApp</div>`;
     const ctl = inCart
-      ? `<div class="stepper" role="group" aria-label="Quantidade"><button type="button" data-dec="${p.id}" aria-label="Diminuir">−</button><output>${inCart.q}</output><button type="button" data-inc="${p.id}" aria-label="Aumentar">+</button></div>`
-      : `<button type="button" class="add" data-add="${p.id}" aria-label="Adicionar ${esc(p.nome)} ao pedido">${ico("i-plus", 16)}<span class="t">Adicionar</span></button>`;
+      ? `<div class="stepper" role="group" aria-label="Quantidade"><button type="button" data-dec="${esc(p.id)}" aria-label="Diminuir">−</button><output>${inCart.q}</output><button type="button" data-inc="${esc(p.id)}" aria-label="Aumentar">+</button></div>`
+      : `<button type="button" class="add" data-add="${esc(p.id)}" aria-label="Adicionar ${esc(p.nome)} ao pedido">${ico("i-plus", 16)}<span class="t">Adicionar</span></button>`;
     const s = setorById[p.setor];
     const nicho = s.nichos.find((n) => n.id === p.nicho);
-    return `<article class="card"${opts.anchor ? ` id="p-${p.id}"` : ""} data-id="${p.id}" data-where="${opts.where ? 1 : ""}">
+    return `<article class="card"${opts.anchor ? ` id="p-${esc(p.id)}"` : ""} data-id="${esc(p.id)}" data-where="${opts.where ? 1 : ""}">
       <div class="pic">${p.de ? `<span class="ribbon">Oferta</span>` : ""}<img src="${img(p)}" alt="${esc(p.nome)}" loading="lazy" width="600" height="600"></div>
       <div class="body"><span class="brand">${esc(p.marca)}</span><h3>${esc(p.nome)}</h3><span class="meta">${esc(p.info)} · ${esc(p.peso)}</span>
       ${opts.where ? `<a class="where" href="${linkProduto(p)}">${esc(s.nome)} › ${esc(nicho ? nicho.nome : "")}</a>` : ""}
-      ${p.opcoes ? `<div class="opts" role="group" aria-label="Opção">${p.opcoes.map((o) => `<button type="button" class="opt" data-opt="${p.id}" data-v="${esc(o)}" aria-pressed="${o === opt}">${esc(o)}</button>`).join("")}</div>` : ""}
+      ${p.opcoes ? `<div class="opts" role="group" aria-label="Opção">${p.opcoes.map((o) => `<button type="button" class="opt" data-opt="${esc(p.id)}" data-v="${esc(o)}" aria-pressed="${o === opt}">${esc(o)}</button>`).join("")}</div>` : ""}
       <div class="buy">${price}${ctl}</div></div></article>`;
   }
   function refreshCards() {
@@ -317,8 +325,8 @@
   /* ---------- início ---------- */
   $("#fab").href = waLink("Olá, Casa da Ração! Vim pelo site e gostaria de tirar uma dúvida.");
   status();
-  if (PAGE === "inicio") renderHome(); else renderSector();
+  if (PAGE === "inicio") renderHome(); else if (setorById[PAGE]) renderSector();
   renderNav(); renderCart(); updateCount(false);
   window.addEventListener("hashchange", applyHash);
-  if (PAGE !== "inicio") requestAnimationFrame(applyHash);
+  if (setorById[PAGE]) requestAnimationFrame(applyHash);
 })();
