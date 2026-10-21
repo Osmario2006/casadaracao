@@ -115,7 +115,7 @@
     $("#navBody").innerHTML =
       `<a class="nav-link${cur("inicio")}" href="index.html"><span class="nav-ico">${ico("i-home")}</span>Início</a>
        <a class="nav-link" href="index.html#promocoes"><span class="nav-ico">${ico("i-tag")}</span>Promoções</a>
-       <div class="d-sep"></div><div class="d-label">Setores e produtos</div>` +
+       <div class="d-sep"></div><div class="d-label">Setores</div>` +
       SETORES.map((s) => {
         const items = PRODUTOS.filter((p) => p.setor === s.id);
         const open = s.id === PAGE;
