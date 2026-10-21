@@ -65,6 +65,13 @@ create policy "admin envia fotos" on storage.objects for insert with check (buck
 create policy "admin altera fotos" on storage.objects for update using (bucket_id = 'produtos' and public.is_admin());
 create policy "admin exclui fotos" on storage.objects for delete using (bucket_id = 'produtos' and public.is_admin());
 
+-- Acesso pela API do site (o projeto não expõe tabelas novas automaticamente)
+grant usage on schema public to anon, authenticated;
+grant select on public.produtos, public.promocoes to anon, authenticated;
+grant insert, update, delete on public.produtos, public.promocoes to authenticated;
+grant select on public.admins to authenticated;
+grant execute on function public.is_admin() to anon, authenticated;
+
 -- Catálogo inicial (o mesmo que está no site hoje)
 insert into public.produtos (id,setor,nicho,marca,nome,info,peso,preco,de,opcoes,destaque,ativo,imagem,tags,ordem) values ('quatree-supreme', 'caes', 'racoes', 'Quatree', 'Ração Quatree Supreme Cães Adultos', 'Frango e batata-doce · Super premium, sem corantes', '15 kg', null, null, array['Raças médias e grandes','Raças pequenas']::text[], true, true, 'quatree-supreme.webp', 'racao super premium cachorro', 0) on conflict (id) do nothing;
 insert into public.produtos (id,setor,nicho,marca,nome,info,peso,preco,de,opcoes,destaque,ativo,imagem,tags,ordem) values ('pedigree-adultos', 'caes', 'racoes', 'Pedigree', 'Ração Pedigree Adulto', 'Carne e vegetais', '10,1 kg', null, null, null, false, true, 'pedigree-adultos.webp', 'racao cachorro', 1) on conflict (id) do nothing;
