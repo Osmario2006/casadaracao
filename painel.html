@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Painel da Loja · Casa da Ração</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0f5a2b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/painel.css">
+</head>
+<body class="painel">
+
+<header class="top">
+  <div class="wrap p-top">
+    <div class="logo">
+      <span class="logo-badge"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="6" cy="9" rx="2.3" ry="3" fill="currentColor"/><ellipse cx="18" cy="9" rx="2.3" ry="3" fill="currentColor"/><ellipse cx="9.6" cy="4.6" rx="2.2" ry="2.9" fill="currentColor"/><ellipse cx="14.4" cy="4.6" rx="2.2" ry="2.9" fill="currentColor"/><path d="M12 11c-3.2 0-6 3.6-6 6.4 0 1.9 1.4 2.8 3 2.8 1.2 0 2-.6 3-.6s1.8.6 3 .6c1.6 0 3-.9 3-2.8 0-2.8-2.8-6.4-6-6.4z" fill="currentColor"/></svg></span>
+      <span class="logo-txt"><b>Painel da loja</b><small>Casa da Ração</small></span>
+    </div>
+    <nav class="p-links">
+      <a class="btn btn-ghost btn-sm" href="index.html" target="_blank" rel="noopener">Ver site</a>
+      <button class="btn btn-ghost btn-sm" type="button" id="logout" hidden>Sair</button>
+    </nav>
+  </div>
+</header>
+
+<!-- entrada -->
+<main class="wrap" id="login">
+  <section class="p-card p-login">
+    <h1>Entrar no painel</h1>
+    <p class="muted">Aqui o dono da loja altera preços, fotos, produtos e promoções do site. Cole a chave de acesso para continuar.</p>
+    <form id="loginForm" class="form" novalidate>
+      <div class="field">
+        <label for="token">Chave de acesso</label>
+        <input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+        <p class="err" id="loginErr" hidden></p>
+      </div>
+      <label class="check"><input type="checkbox" id="remember" checked> Manter conectado neste aparelho</label>
+      <button class="btn btn-green" type="submit" id="loginBtn">Entrar</button>
+    </form>
+    <details class="help">
+      <summary>Como conseguir a chave de acesso</summary>
+      <ol>
+        <li>Na conta do GitHub dona do site, abra <b>github.com/settings/personal-access-tokens/new</b>.</li>
+        <li>Em <b>Token name</b>, escreva "Painel Casa da Ração". Em <b>Expiration</b>, escolha até 1 ano.</li>
+        <li>Em <b>Repository access</b>, marque <b>Only select repositories</b> e escolha <b>casadaracao</b>.</li>
+        <li>Em <b>Permissions → Repository permissions → Contents</b>, escolha <b>Read and write</b>.</li>
+        <li>Clique em <b>Generate token</b>, copie a chave e cole aqui.</li>
+      </ol>
+      <p class="muted">A chave só consegue alterar este site. Guarde-a como uma senha.</p>
+    </details>
+  </section>
+</main>
+
+<!-- painel -->
+<main class="wrap" id="app" hidden>
+  <div class="tabs" role="tablist" aria-label="Seções do painel">
+    <button class="tab" role="tab" id="tab-produtos" aria-selected="true" aria-controls="view-produtos">Produtos <span id="nProd"></span></button>
+    <button class="tab" role="tab" id="tab-promos" aria-selected="false" aria-controls="view-promos">Promoções <span id="nPromo"></span></button>
+  </div>
+
+  <section id="view-produtos" role="tabpanel" aria-labelledby="tab-produtos">
+    <div class="toolbar">
+      <div class="field grow"><label class="sr" for="fq">Buscar produto</label><input id="fq" type="search" placeholder="Buscar produto…"></div>
+      <div class="field"><label class="sr" for="fs">Setor</label><select id="fs"><option value="">Todos os setores</option></select></div>
+      <button class="btn btn-green" type="button" id="newProd">+ Novo produto</button>
+    </div>
+    <p class="muted small">Altere o preço direto na lista ou toque em <b>Editar</b> para mudar foto, nome e o resto. Deixe o preço vazio para mostrar "Valor no WhatsApp".</p>
+    <div id="prodList" class="list"></div>
+  </section>
+
+  <section id="view-promos" role="tabpanel" aria-labelledby="tab-promos" hidden>
+    <div class="toolbar">
+      <p class="muted small grow" style="margin:0">As promoções aparecem no topo da página inicial, na ordem abaixo. Produtos com "preço antigo" aparecem em "Produtos em oferta".</p>
+      <button class="btn btn-green" type="button" id="newPromo">+ Nova promoção</button>
+    </div>
+    <div id="promoList" class="list"></div>
+  </section>
+</main>
+
+<!-- barra de publicação -->
+<div class="pubbar" id="pubbar" hidden>
+  <div class="wrap pubbar-in">
+    <div class="pub-msg" id="pubMsg" role="status"></div>
+    <div class="pub-actions">
+      <button class="btn btn-line" type="button" id="discard">Descartar</button>
+      <button class="btn btn-sun" type="button" id="publish">Publicar no site</button>
+    </div>
+  </div>
+</div>
+
+<!-- editor -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer right editor" id="editor" aria-labelledby="edTitle" aria-hidden="true" inert>
+  <div class="d-head"><h2 id="edTitle">Editar</h2><button class="iconbtn" id="edClose" type="button" aria-label="Fechar"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
+  <form class="d-body form" id="edForm" novalidate></form>
+  <div class="c-foot ed-foot" id="edFoot"></div>
+</aside>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="js/painel.js"></script>
+</body>
+</html>

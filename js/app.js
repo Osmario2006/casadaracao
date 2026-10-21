@@ -1,6 +1,20 @@
 /* Casa da Ração — lógica compartilhada (vitrine, busca, menu, pedido) */
-(function () {
-  const { WHATSAPP, SETORES, PRODUTOS } = window.CATALOGO;
+(async function () {
+  /* o catálogo fica em data/catalogo.json e é editado pelo painel do dono */
+  let CAT;
+  try {
+    const r = await fetch("data/catalogo.json?t=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error(r.status);
+    CAT = await r.json();
+  } catch (e) {
+    const box = document.getElementById("pageContent");
+    if (box) box.insertAdjacentHTML("afterbegin", `<div class="wrap"><div class="empty" style="margin-top:24px"><h3>Não foi possível carregar os produtos</h3><p>Verifique sua internet e atualize a página. Se preferir, fale com a loja pelo WhatsApp.</p></div></div>`);
+    return;
+  }
+  const WHATSAPP = CAT.WHATSAPP;
+  const SETORES = CAT.SETORES;
+  const PRODUTOS = CAT.PRODUTOS.filter((p) => p.ativo !== false);
+  const PROMOCOES = (CAT.PROMOCOES || []).filter((p) => p.ativo !== false);
   const PAGE = document.body.dataset.page; // "inicio" ou id do setor
   const $ = (s) => document.querySelector(s);
   const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -64,6 +78,20 @@
 
   /* ---------- página inicial ---------- */
   function renderHome() {
+    // promoções: banners cadastrados no painel + produtos com preço "de/por"
+    $("#promoBanners").innerHTML = PROMOCOES.map((b) => {
+      const p = b.produto && byId[b.produto];
+      const tag = p ? "a" : "div";
+      return `<${tag} class="promo-card ${b.cor === "verde" ? "soft" : "sun"}"${p ? ` href="${linkProduto(p)}"` : ""}>
+        <div class="burst" aria-hidden="true"><div><small>${esc(b.seloTopo || "")}</small><span>${esc(b.seloValor || "")}</span></div></div>
+        <div><h3>${esc(b.titulo)}</h3>${b.texto ? `<p>${esc(b.texto)}</p>` : ""}</div></${tag}>`;
+    }).join("");
+    const ids = new Set(PROMOCOES.map((b) => b.produto).filter((id) => byId[id]));
+    PRODUTOS.forEach((p) => { if (p.de) ids.add(p.id); });
+    const ofertas = [...ids].map((id) => byId[id]);
+    $("#ofertas").innerHTML = ofertas.map((p) => card(p, { where: true })).join("");
+    $("#ofertasWrap").hidden = !ofertas.length;
+    $("#promocoes").hidden = !PROMOCOES.length && !ofertas.length;
     $("#sectors").innerHTML = SETORES.map((s) => {
       const items = PRODUTOS.filter((p) => p.setor === s.id);
       return `<a class="scard" href="${s.pagina}">
@@ -71,7 +99,7 @@
         <div class="sb"><h3>${ico(s.icon, 20)}${esc(s.nome)}</h3><p>${s.nichos.map((n) => esc(n.nome)).join(" · ")}</p>
         <span class="go">Ver ${items.length} produtos ${ico("i-chev", 16)}</span></div></a>`;
     }).join("");
-    const dest = PRODUTOS.filter((p) => p.destaque);
+    const dest = PRODUTOS.filter((p) => p.destaque && !ids.has(p.id));
     $("#destaques").innerHTML = dest.map((p) => card(p, { where: true })).join("");
     $("#destaquesCount").textContent = dest.length + " produtos";
   }

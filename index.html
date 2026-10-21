@@ -56,45 +56,31 @@
 </header>
 
 <div id="pageContent">
-<section class="hero home">
+<section class="hero promo-top" id="promocoes">
   <div class="wrap">
-    <div>
-      <span class="status js-status"><i></i><span>Horário de funcionamento</span></span>
-      <h1>Tudo pra seu pet, <em>sem fila no WhatsApp.</em></h1>
-      <p class="lead">Escolha o setor, monte seu pedido e envie de uma vez para a loja. A gente confirma valores e entrega rapidinho no Novo Paraíso e bairros vizinhos.</p>
-      <div class="hero-actions">
-        <a class="btn btn-sun" href="#setores">Escolher setor</a>
-        <a class="btn btn-ghost" href="#loja">Horários e endereço</a>
+    <div class="promo-head">
+      <div>
+        <span class="status js-status"><i></i><span>Horário de funcionamento</span></span>
+        <h1>Promoções <em>da loja</em></h1>
       </div>
+      <p class="lead">Tudo pra seu pet, sem fila no WhatsApp. Monte seu pedido e envie de uma vez.</p>
     </div>
-    <div class="facts" aria-label="Informações da loja">
-      <div><svg width="22" height="22" aria-hidden="true"><use href="#i-truck"/></svg><p><b>Fazemos entregas</b><span>Somente nos bairros vizinhos à loja</span></p></div>
-      <div><svg width="22" height="22" aria-hidden="true"><use href="#i-box"/></svg><p><b>Atacado e varejo</b><span>Sacos fechados e compras em quantidade</span></p></div>
-      <div><svg width="22" height="22" aria-hidden="true"><use href="#i-clock"/></svg><p><b>Seg a sex 8h–12h e 14h–18h</b><span>Sábado das 8h às 12h</span></p></div>
+    <div class="promo" id="promoBanners"></div>
+    <div id="ofertasWrap" hidden>
+      <h2 class="promo-sub">Produtos em oferta</h2>
+      <div class="grid" id="ofertas"></div>
     </div>
   </div>
 </section>
 
 <main class="wrap">
+  <div class="section-head" id="setores"><h2>Setores</h2><small>Toque para ver os produtos</small></div>
+  <div class="sectors" id="sectors"></div>
+
   <div class="steps" aria-label="Como pedir">
     <div class="step"><b>1</b><span>Escolha o setor e adicione os produtos</span></div>
     <div class="step"><b>2</b><span>Informe entrega e pagamento</span></div>
     <div class="step"><b>3</b><span>Envie tudo pronto no WhatsApp</span></div>
-  </div>
-
-  <div class="section-head" id="setores"><h2>Setores</h2><small>Toque para ver os produtos</small></div>
-  <div class="sectors" id="sectors"></div>
-
-  <div class="section-head" id="promocoes"><h2>Promoções</h2></div>
-  <div class="promo" style="margin-top:0">
-    <a class="promo-card sun" href="gatos.html#p-quatree-sache">
-      <div class="burst" aria-hidden="true"><div><small>LEVE 4</small><span>R$10</span></div></div>
-      <div><h3>Sachês para gatos: leve 4 por R$ 10</h3><p>Unidade a R$ 2,99. Pagamento em dinheiro ou Pix, enquanto durar o estoque.</p></div>
-    </a>
-    <a class="promo-card soft" href="higiene-e-beleza.html#p-sanol-colonia">
-      <div class="burst" aria-hidden="true"><div><small>POR</small><span>12,99</span></div></div>
-      <div><h3>Colônias Sanol Dog 120 mL</h3><p>De R$ 18,99 por R$ 12,99. Fêmea ou Macho.</p></div>
-    </a>
   </div>
 
   <div class="section-head"><h2>Destaques</h2><small id="destaquesCount"></small></div>
@@ -115,11 +101,11 @@
       </div>
     </div>
     <div class="panel">
-      <h2>Avisos importantes</h2>
+      <h2>Como funciona</h2>
       <ul class="notice">
-        <li><svg width="18" height="18" aria-hidden="true"><use href="#i-alert"/></svg><span>Entregas somente nos bairros vizinhos à loja.</span></li>
-        <li><svg width="18" height="18" aria-hidden="true"><use href="#i-alert"/></svg><span>Não trabalhamos com venda de animais.</span></li>
-        <li><svg width="18" height="18" aria-hidden="true"><use href="#i-alert"/></svg><span>Não trabalhamos com venda de vacinas.</span></li>
+        <li><svg width="18" height="18" aria-hidden="true"><use href="#i-truck"/></svg><span>Fazemos entregas somente nos bairros vizinhos à loja.</span></li>
+        <li><svg width="18" height="18" aria-hidden="true"><use href="#i-box"/></svg><span>Atacado e varejo: sacos fechados e compras em quantidade.</span></li>
+        <li><svg width="18" height="18" aria-hidden="true"><use href="#i-alert"/></svg><span>Não trabalhamos com venda de animais nem de vacinas.</span></li>
         <li><svg width="18" height="18" aria-hidden="true"><use href="#i-alert"/></svg><span>Preços e estoque são confirmados pela loja no WhatsApp antes da entrega.</span></li>
       </ul>
     </div>
@@ -198,7 +184,6 @@
 
 <div class="toast" id="toast" role="status"></div>
 
-<script src="js/produtos.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

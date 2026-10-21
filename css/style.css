@@ -285,3 +285,17 @@ fieldset.field{border:0;padding:0;margin:0}
 
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:700;font-size:.9rem;z-index:90;opacity:0;pointer-events:none;transition:.2s;max-width:calc(100vw - 32px);text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* promoções no topo da página inicial */
+.promo-top .wrap{gap:18px;padding-block:22px 44px}
+.promo-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px 24px}
+.promo-top h1{font-size:clamp(1.9rem,4.6vw,2.9rem);margin-top:12px}
+.promo-top p.lead{margin:0;max-width:30em;font-size:1rem}
+.promo-top .promo{margin-top:0}
+.promo-sub{font-size:1.25rem;margin:6px 0 12px}
+.promo-card{transition:transform .2s,box-shadow .2s}
+a.promo-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.promo-top .promo-card.soft{background:var(--surface);color:var(--ink)}
+.promo-top .steps{margin-top:0}
+main > .section-head:first-child{margin-top:30px}
+main > .steps{margin-top:22px}
