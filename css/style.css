@@ -242,10 +242,10 @@ footer .fine{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.15);padding
 .nav-ico{width:32px;height:32px;border-radius:9px;background:var(--green-soft);color:var(--green);display:grid;place-items:center;flex:none}
 .nav-link.current .nav-ico{background:var(--green);color:#fff}
 .sub{margin:0 0 10px;padding:0 0 0 54px;display:grid;gap:2px}
-.sub a{display:block;padding:7px 8px;border-radius:8px;font-size:.92rem;text-decoration:none;color:var(--ink)}
+.sub a{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:40px;padding:0 10px;border-radius:8px;font-size:.95rem;font-weight:700;text-decoration:none;color:var(--ink)}
+.sub a span{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .sub a:hover{background:var(--green-soft)}
-.sub .all{font-weight:800;color:var(--green)}
-.sub .grp{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800;padding:10px 8px 2px}
+.sub .all{color:var(--green)}
 .d-sep{height:1px;background:var(--line);margin:10px 4px}
 .d-label{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800;padding:8px 10px 4px}
 

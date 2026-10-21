@@ -120,11 +120,10 @@
         const items = PRODUTOS.filter((p) => p.setor === s.id);
         const open = s.id === PAGE;
         return `<button class="nav-link${cur(s.id)}" type="button" aria-expanded="${open}" aria-controls="sub-${s.id}" data-sec="${s.id}"><span class="nav-ico">${ico(s.icon)}</span>${esc(s.nome)}<span class="n">${items.length}</span>${ico("i-chev", 16).replace("<svg", '<svg class="chev"')}</button>
-        <div class="sub" id="sub-${s.id}"${open ? "" : " hidden"}><a class="all" href="${s.pagina}">Ver todos de ${esc(s.nome)}</a>
+        <div class="sub" id="sub-${s.id}"${open ? "" : " hidden"}><a class="all" href="${s.pagina}">Ver tudo <span>${items.length}</span></a>
         ${s.nichos.map((n) => {
-          const list = items.filter((p) => p.nicho === n.id);
-          if (!list.length) return "";
-          return `<a class="grp" href="${s.pagina}#n-${n.id}">${esc(n.nome)}</a>` + list.map((p) => `<a href="${linkProduto(p)}">${esc(p.nome)}</a>`).join("");
+          const q = items.filter((p) => p.nicho === n.id).length;
+          return q ? `<a href="${s.pagina}#n-${n.id}">${esc(n.nome)} <span>${q}</span></a>` : "";
         }).join("")}</div>`;
       }).join("") +
       `<div class="d-sep"></div>
