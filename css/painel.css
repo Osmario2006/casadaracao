@@ -93,3 +93,12 @@
 .pub-msg.bad{color:var(--danger)}
 .pub-actions{display:flex;gap:8px}
 .painel .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+
+/* login por e-mail */
+.p-login .linkbtn{justify-self:start}
+.ok-msg{color:var(--green);font-weight:700;margin:0}
+.who{font-size:.85rem;opacity:.85;max-width:40vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:520px){.who{display:none}}
+.savebar{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:85;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;font-size:.92rem;max-width:calc(100vw - 32px);text-align:center;box-shadow:var(--shadow)}
+.savebar.bad{background:var(--danger);color:#fff}
+.row.saving{opacity:.7}

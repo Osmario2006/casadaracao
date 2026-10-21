@@ -21,17 +21,21 @@ O pedido fica salvo no navegador do cliente, então ele pode adicionar produtos 
 ## Painel do dono (`painel.html`)
 Endereço: https://osmario2006.github.io/casadaracao/painel.html (não tem link no site).
 
-No painel dá para alterar preços, trocar fotos, cadastrar, ocultar e excluir produtos e editar as promoções do topo da página inicial.
-Ao tocar em **Publicar no site**, o painel grava as mudanças neste repositório e o GitHub Pages republica o site em 1 a 2 minutos.
+Login com **e-mail e senha**. No painel dá para alterar preços, trocar fotos, cadastrar, ocultar e excluir produtos e editar as promoções do topo da página inicial. Cada alteração é salva na hora e já aparece no site.
 
-Para entrar, o painel pede uma **chave de acesso** (fine-grained personal access token) criada na conta dona do repositório:
-1. https://github.com/settings/personal-access-tokens/new
-2. Repository access: **Only select repositories → casadaracao**
-3. Permissions → Repository → **Contents: Read and write**
-4. Gere a chave e cole no painel. Ela fica salva só no aparelho de quem entrou.
+### Banco de dados (Supabase)
+Produtos, promoções, fotos e login ficam num projeto Supabase gratuito.
+1. Crie o projeto em https://supabase.com e rode `supabase/setup.sql` no **SQL Editor** (cria as tabelas, as regras de segurança, o armazenamento de fotos e copia o catálogo atual).
+2. Em **Authentication → Users → Add user**, crie o usuário do dono (e-mail e senha, marcando auto-confirmar).
+3. Rode `supabase/admin.sql` para dar a esse usuário permissão de alterar o site.
+4. Em **Authentication → Sign In / Providers**, desligue **Allow new users to sign up**.
+5. Em **Authentication → URL Configuration**, coloque `https://osmario2006.github.io/casadaracao/painel.html` em **Site URL** (usado no link de "Esqueci minha senha").
+6. Copie **Project URL** e **anon public key** (Project Settings → API) para `js/config.js`.
+
+Enquanto `js/config.js` estiver vazio, o site usa o catálogo de `data/catalogo.json`.
 
 ## Como editar à mão
-O catálogo fica em **`data/catalogo.json`** (o painel edita esse arquivo):
+Os setores e o WhatsApp ficam em **`data/catalogo.json`**. Os produtos também ficam lá como reserva, caso o banco esteja fora do ar:
 - `preco`: valor em reais (ex.: `89.9`). Use `null` para mostrar "Valor no WhatsApp".
 - `de`: preço antigo (opcional), aparece riscado com o selo "Oferta".
 - `nicho`: em que grupo o produto aparece dentro da página do setor.
@@ -44,7 +48,9 @@ Para criar um nicho novo, adicione-o na lista `nichos` do setor. As páginas mon
 ## Estrutura
 ```
 css/style.css     estilos de todas as páginas
-data/catalogo.json  catálogo (promoções, setores, nichos e produtos)
+data/catalogo.json  setores, WhatsApp e cópia de reserva do catálogo
+js/config.js      endereço e chave pública do Supabase
+supabase/         SQL para criar o banco
 js/app.js         vitrine, busca, menu lateral e pedido pelo WhatsApp
 js/painel.js      painel do dono
 img/              fotos dos produtos

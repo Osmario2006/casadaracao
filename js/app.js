@@ -6,7 +6,20 @@
     const r = await fetch("data/catalogo.json?t=" + Date.now(), { cache: "no-store" });
     if (!r.ok) throw new Error(r.status);
     CAT = await r.json();
-  } catch (e) {
+  } catch (e) { CAT = null; }
+  // produtos e promoções vêm do banco de dados quando ele está configurado
+  const cfg = window.CDR_CONFIG || {};
+  if (cfg.SUPABASE_URL && cfg.SUPABASE_ANON_KEY) {
+    try {
+      const h = { apikey: cfg.SUPABASE_ANON_KEY, Authorization: "Bearer " + cfg.SUPABASE_ANON_KEY };
+      const get = async (q) => { const r = await fetch(cfg.SUPABASE_URL + "/rest/v1/" + q, { headers: h, cache: "no-store" }); if (!r.ok) throw new Error(r.status); return r.json(); };
+      const [prods, promos] = await Promise.all([get("produtos?select=*&order=ordem.asc,nome.asc"), get("promocoes?select=*&order=ordem.asc")]);
+      CAT = CAT || { WHATSAPP: "5579996554655", SETORES: [] };
+      CAT.PRODUTOS = prods.map((p) => ({ ...p, preco: p.preco == null ? null : Number(p.preco), de: p.de == null ? null : Number(p.de), opcoes: p.opcoes && p.opcoes.length ? p.opcoes : null }));
+      CAT.PROMOCOES = promos.map((b) => ({ ...b, seloTopo: b.selo_topo, seloValor: b.selo_valor }));
+    } catch (e) { /* sem banco: segue com o catálogo do arquivo */ }
+  }
+  if (!CAT || !CAT.SETORES || !CAT.SETORES.length) {
     const box = document.getElementById("pageContent");
     if (box) box.insertAdjacentHTML("afterbegin", `<div class="wrap"><div class="empty" style="margin-top:24px"><h3>Não foi possível carregar os produtos</h3><p>Verifique sua internet e atualize a página. Se preferir, fale com a loja pelo WhatsApp.</p></div></div>`);
     return;
@@ -24,7 +37,7 @@
   const ico = (id, s = 18) => `<svg width="${s}" height="${s}" aria-hidden="true"><use href="#${id}"/></svg>`;
   const byId = Object.fromEntries(PRODUTOS.map((p) => [p.id, p]));
   const setorById = Object.fromEntries(SETORES.map((s) => [s.id, s]));
-  const img = (p) => "img/" + p.imagem;
+  const img = (p) => (/^https?:\/\//.test(p.imagem) ? p.imagem : "img/" + p.imagem);
   const linkProduto = (p) => setorById[p.setor].pagina + "#p-" + p.id;
   const sel = {};
 

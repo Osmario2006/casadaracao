@@ -21,6 +21,7 @@
       <span class="logo-txt"><b>Painel da loja</b><small>Casa da Ração</small></span>
     </div>
     <nav class="p-links">
+      <span class="who" id="who"></span>
       <a class="btn btn-ghost btn-sm" href="index.html" target="_blank" rel="noopener">Ver site</a>
       <button class="btn btn-ghost btn-sm" type="button" id="logout" hidden>Sair</button>
     </nav>
@@ -30,28 +31,33 @@
 <!-- entrada -->
 <main class="wrap" id="login">
   <section class="p-card p-login">
-    <h1>Entrar no painel</h1>
-    <p class="muted">Aqui o dono da loja altera preços, fotos, produtos e promoções do site. Cole a chave de acesso para continuar.</p>
+    <h1 id="loginTitle">Entrar no painel</h1>
+    <p class="muted" id="loginLead">Área exclusiva do dono da loja para alterar preços, fotos, produtos e promoções do site.</p>
+
     <form id="loginForm" class="form" novalidate>
-      <div class="field">
-        <label for="token">Chave de acesso</label>
-        <input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
-        <p class="err" id="loginErr" hidden></p>
-      </div>
-      <label class="check"><input type="checkbox" id="remember" checked> Manter conectado neste aparelho</label>
+      <div class="field"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" inputmode="email" placeholder="seu@email.com"></div>
+      <div class="field"><label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password"></div>
+      <p class="err" id="loginErr" hidden></p>
       <button class="btn btn-green" type="submit" id="loginBtn">Entrar</button>
+      <button class="linkbtn" type="button" id="forgot">Esqueci minha senha</button>
     </form>
-    <details class="help">
-      <summary>Como conseguir a chave de acesso</summary>
-      <ol>
-        <li>Na conta do GitHub dona do site, abra <b>github.com/settings/personal-access-tokens/new</b>.</li>
-        <li>Em <b>Token name</b>, escreva "Painel Casa da Ração". Em <b>Expiration</b>, escolha até 1 ano.</li>
-        <li>Em <b>Repository access</b>, marque <b>Only select repositories</b> e escolha <b>casadaracao</b>.</li>
-        <li>Em <b>Permissions → Repository permissions → Contents</b>, escolha <b>Read and write</b>.</li>
-        <li>Clique em <b>Generate token</b>, copie a chave e cole aqui.</li>
-      </ol>
-      <p class="muted">A chave só consegue alterar este site. Guarde-a como uma senha.</p>
-    </details>
+
+    <form id="resetForm" class="form" novalidate hidden>
+      <div class="field"><label for="remail">E-mail cadastrado</label><input id="remail" type="email" autocomplete="username" inputmode="email"></div>
+      <p class="err" id="resetErr" hidden></p>
+      <p class="ok-msg" id="resetOk" hidden></p>
+      <button class="btn btn-green" type="submit" id="resetBtn">Enviar link para criar nova senha</button>
+      <button class="linkbtn" type="button" id="backLogin">Voltar para o login</button>
+    </form>
+
+    <form id="newPassForm" class="form" novalidate hidden>
+      <div class="field"><label for="npass">Nova senha</label><input id="npass" type="password" autocomplete="new-password"><p class="hint">Use pelo menos 8 caracteres.</p></div>
+      <div class="field"><label for="npass2">Repita a nova senha</label><input id="npass2" type="password" autocomplete="new-password"></div>
+      <p class="err" id="npErr" hidden></p>
+      <button class="btn btn-green" type="submit" id="npBtn">Salvar nova senha</button>
+    </form>
+
+    <p class="err" id="cfgErr" hidden>O banco de dados ainda não foi ligado a este site. Preencha js/config.js com os dados do projeto Supabase.</p>
   </section>
 </main>
 
@@ -68,7 +74,7 @@
       <div class="field"><label class="sr" for="fs">Setor</label><select id="fs"><option value="">Todos os setores</option></select></div>
       <button class="btn btn-green" type="button" id="newProd">+ Novo produto</button>
     </div>
-    <p class="muted small">Altere o preço direto na lista ou toque em <b>Editar</b> para mudar foto, nome e o resto. Deixe o preço vazio para mostrar "Valor no WhatsApp".</p>
+    <p class="muted small">Altere o preço direto na lista ou toque em <b>Editar</b> para mudar foto, nome e o resto. Cada alteração é salva na hora e já aparece no site. Deixe o preço vazio para mostrar "Valor no WhatsApp".</p>
     <div id="prodList" class="list"></div>
   </section>
 
@@ -81,16 +87,7 @@
   </section>
 </main>
 
-<!-- barra de publicação -->
-<div class="pubbar" id="pubbar" hidden>
-  <div class="wrap pubbar-in">
-    <div class="pub-msg" id="pubMsg" role="status"></div>
-    <div class="pub-actions">
-      <button class="btn btn-line" type="button" id="discard">Descartar</button>
-      <button class="btn btn-sun" type="button" id="publish">Publicar no site</button>
-    </div>
-  </div>
-</div>
+<div class="savebar" id="savebar" role="status" hidden></div>
 
 <!-- editor -->
 <div class="scrim" id="scrim"></div>
@@ -102,6 +99,8 @@
 
 <div class="toast" id="toast" role="status"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
 <script src="js/painel.js"></script>
 </body>
 </html>
